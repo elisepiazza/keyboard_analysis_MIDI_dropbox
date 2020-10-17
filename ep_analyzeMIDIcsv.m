@@ -81,10 +81,10 @@ for c = 1:nCond
                     prop_corr(s,b,run) = length(indices)/size(curr_data_answer,1);
                 end
                 
-                figsize = [100 100 200*length(subjects) 250];
-                figure((run-1)*nCond+c); set(gcf, 'Position', figsize);
-                subplot(1,nSubs,s); plot(1:n_total_beats, prop_corr(s,:,run), 'o', 'MarkerSize', 12, 'MarkerEdgeColor', 'k', 'MarkerFaceColor', [0 .4 1]); ylim([0 1]); xlim([1 n_total_beats]); title(['Subject ' num2str(subjects(s))]); set(gca, 'FontSize', 16); ylabel('Prop. Correct Events'); xlabel('Beat');
-                print(gcf, '-dtiff', ['figures/Acc by beat_' condition '_run' num2str(run) '_beatpadding=' num2str(beat_padding) '.tif']);
+%                 figsize = [100 100 200*length(subjects) 250];
+%                 figure((run-1)*nCond+c); set(gcf, 'Position', figsize);
+%                 subplot(1,nSubs,s); plot(1:n_total_beats, prop_corr(s,:,run), 'o', 'MarkerSize', 12, 'MarkerEdgeColor', 'k', 'MarkerFaceColor', [0 .4 1]); ylim([0 1]); xlim([1 n_total_beats]); title(['Subject ' num2str(subjects(s))]); set(gca, 'FontSize', 16); ylabel('Prop. Correct Events'); xlabel('Beat');
+%                 print(gcf, '-dtiff', ['figures/Acc by beat_' condition '_run' num2str(run) '_beatpadding=' num2str(beat_padding) '.tif']);
                 
             else
                 prop_corr(s,:,run) = NaN;
@@ -96,7 +96,7 @@ for c = 1:nCond
     prop_corr_all_conditions{c} = prop_corr;
 end
 
-save(['analyzed/prop_corr_all_conditions_beatpadding=' num2str(beat_padding) '.mat'], 'prop_corr_all_conditions');
+save(['analyzed/prop_corr_all_conditions_beatpadding=' num2str(beat_padding) '.mat'], 'prop_corr_all_conditions', 'conditions');
 
 
 %Analyze group data
