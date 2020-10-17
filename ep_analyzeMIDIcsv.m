@@ -1,11 +1,10 @@
 %ep_analyzeMIDIcsv
-%Note: in 1B, 2B, in beat 1 (time 0), there's stuff
 
 clear;
 % cd('/Users/elise/Dropbox/fMRI_music/keyboard_main/behavior/MIDI/');
 cd('/Users/eap/Dropbox/fMRI_music/keyboard_main/behavior/MIDI/');
 
-subjects = [2 3 4 5 8 9 10 15 17 20 21 23 22]; nSubs = length(subjects); 
+subjects = [2 3 4 5 8 9 10 15 17 20 21 23 22]; nSubs = length(subjects);
 groups = {'AM', 'AM', 'M', 'M', 'M', 'M', 'AM', 'AM', 'M', 'AM', 'M', 'AM', 'M'};
 
 conditions = {'1B', '2B', '8B', 'I'}; nCond = length(conditions);
@@ -39,9 +38,11 @@ for c = 1:nCond
     condition = conditions{c};
     
     load(['M_' condition '_answer_key.mat']);
+    %Define the start time of each quarter-note beat according to
+    %time-stamping: 0 480 960 1440...
     beat_starts = 0:n_samples_in_beat:(n_samples_in_beat*n_total_beats)-1;
     prop_corr = zeros(nSubs,length(beat_starts),2);
-
+    
     for s = 1:length(subjects)
         
         subject = subjects(s);
@@ -80,13 +81,13 @@ for c = 1:nCond
                     prop_corr(s,b,run) = length(indices)/size(curr_data_answer,1);
                 end
                 
-%                 figsize = [100 100 200*length(subjects) 250];
-%                 figure((run-1)*nCond+c); set(gcf, 'Position', figsize);
-%                 subplot(1,nSubs,s); plot(1:n_total_beats, prop_corr(s,:,run), 'o', 'MarkerSize', 12, 'MarkerEdgeColor', 'k', 'MarkerFaceColor', [0 .4 1]); ylim([0 1]); xlim([1 n_total_beats]); title(['Subject ' num2str(subjects(s))]); set(gca, 'FontSize', 16); ylabel('Prop. Correct Events'); xlabel('Beat');
-%                 print(gcf, '-dtiff', ['figures/Acc by beat_' condition '_run' num2str(run) '_beatpadding=' num2str(beat_padding) '.tif']);
-            
+                figsize = [100 100 200*length(subjects) 250];
+                figure((run-1)*nCond+c); set(gcf, 'Position', figsize);
+                subplot(1,nSubs,s); plot(1:n_total_beats, prop_corr(s,:,run), 'o', 'MarkerSize', 12, 'MarkerEdgeColor', 'k', 'MarkerFaceColor', [0 .4 1]); ylim([0 1]); xlim([1 n_total_beats]); title(['Subject ' num2str(subjects(s))]); set(gca, 'FontSize', 16); ylabel('Prop. Correct Events'); xlabel('Beat');
+                print(gcf, '-dtiff', ['figures/Acc by beat_' condition '_run' num2str(run) '_beatpadding=' num2str(beat_padding) '.tif']);
+                
             else
-                prop_corr(s,:,run) = NaN;                  
+                prop_corr(s,:,run) = NaN;
             end
             
         end
@@ -101,9 +102,9 @@ save(['analyzed/prop_corr_all_conditions_beatpadding=' num2str(beat_padding) '.m
 %Analyze group data
 load(['analyzed/prop_corr_all_conditions_beatpadding=' num2str(beat_padding) '.mat']);
 
-%Reshape the cell into an s x c x run matrix of average beat values. 
+%Reshape the cell into an s x c x run matrix of average beat values.
 for c = 1:nCond
-    data = prop_corr_all_conditions{c}; 
+    data = prop_corr_all_conditions{c};
     for run = 1:nRuns
         data_avgbeat(:,c,run) = nanmean(data(:,:,run),2);
         nSubs_by_cond(:,run) = sum(all_completed_runs(:,:,run),2);
@@ -126,7 +127,7 @@ for run = 1:nRuns
     bar(x,y_compareCond(:,run),barwidth,'facecolor', barcolor); hold on;
     errorbar(x,y_compareCond(:,run),errors_compareCond(:,run),'k.', 'LineWidth', 1)
     xlabel('Scramble condition'); ylabel('Mean Accuracy Across Beats'); ylim([0 1]); title(['Run ' num2str(run)]); set(gca, 'XTickLabel', conditions, 'FontSize', 16, 'FontName', 'Helvetica');
-    print(gcf, '-dtiff', ['figures/Acc (avgd across beats), per condition, run ' num2str(run) '_beatpadding=' num2str(beat_padding) '.tif']);  
+    print(gcf, '-dtiff', ['figures/Acc (avgd across beats), per condition, run ' num2str(run) '_beatpadding=' num2str(beat_padding) '.tif']);
 end
 
 %Analyze data (collapsed across conditions) across subjects
@@ -146,7 +147,7 @@ end
 % x = 1:nSubs;
 % y = mean(all_data);
 % errors = std(all_data)/sqrt(size(all_data,1));
-% 
+%
 % figsize = [100 100 325 375]; barwidth = .6; barcolor = [.2 .4 .9];
 % figure('Units', 'pixels', 'Position', figsize);
 % bar(x,y,barwidth,'facecolor', barcolor); hold on;
@@ -216,27 +217,27 @@ end
 % if strcmp(condition, 'I')
 %     mean_acc_across_beats_I = nanmean(prop_corr_all_subs);
 %     save(['analyzed/' session '/run' num2str(run) '/mean_acc_across_conditions_beatpadding=' num2str(beat_padding) '.mat'], 'mean_acc_across_beats_I', '-append');
-%     
+%
 % elseif strcmp(condition, '.05')
 %     mean_acc_across_beats_5perc = nanmean(prop_corr_all_subs);
 %     save(['analyzed/' session '/run' num2str(run) '/mean_acc_across_conditions_beatpadding=' num2str(beat_padding) '.mat'], 'mean_acc_across_beats_5perc', '-append');
-%     
+%
 % elseif strcmp(condition, '.1')
 %     mean_acc_across_beats_10perc = nanmean(prop_corr_all_subs);
 %     save(['analyzed/' session '/run' num2str(run) '/mean_acc_across_conditions_beatpadding=' num2str(beat_padding) '.mat'], 'mean_acc_across_beats_10perc', '-append');
-%     
+%
 % elseif strcmp(condition, '.2')
 %     mean_acc_across_beats_20perc = nanmean(prop_corr_all_subs);
 %     save(['analyzed/' session '/run' num2str(run) '/mean_acc_across_conditions_beatpadding=' num2str(beat_padding) '.mat'], 'mean_acc_across_beats_20perc', '-append');
-%     
+%
 % elseif strcmp(condition, '8B')
 %     mean_acc_across_beats_8B = nanmean(prop_corr_all_subs);
 %     save(['analyzed/' session '/run' num2str(run) '/mean_acc_across_conditions_beatpadding=' num2str(beat_padding) '.mat'], 'mean_acc_across_beats_8B', '-append');
-%     
+%
 % elseif strcmp(condition, '2B')
 %     mean_acc_across_beats_2B = nanmean(prop_corr_all_subs);
 %     save(['analyzed/' session '/run' num2str(run) '/mean_acc_across_conditions_beatpadding=' num2str(beat_padding) '.mat'], 'mean_acc_across_beats_2B', '-append');
-%     
+%
 % elseif strcmp(condition, '1B')
 %     mean_acc_across_beats_1B = nanmean(prop_corr_all_subs);
 %     save(['analyzed/' session '/run' num2str(run) '/mean_acc_across_conditions_beatpadding=' num2str(beat_padding) '.mat'], 'mean_acc_across_beats_1B', '-append');
@@ -245,23 +246,23 @@ end
 % nSubs_by_cond = horzcat(sum(all_completed_runs(:,:,1),2),sum(all_completed_runs(:,:,2),2)); %nSubs completed each condition for each run
 
 %Run data including .05 condition
-completed_run1 = [
-    1 1 1 1 1 1 1 1 1 1 1 1 1
-    1 1 1 1 1 1 1 1 1 1 1 1 1
-    1 1 1 1 1 1 1 1 1 1 1 1 1
-    1 1 1 1 1 1 1 1 1 1 1 1 1
-    1 1 0 1 1 1 1 1 1 1 1 1 1];
-
-completed_run2 = [
-    1 1 1 1 1 1 1 1 1 1 1 1 1
-    1 1 1 1 1 1 1 1 1 1 1 1 1
-    1 1 1 1 1 1 1 1 1 1 1 1 1
-    1 1 1 1 1 1 1 1 1 1 1 1 1
-    1 1 0 1 1 1 1 1 1 1 1 1 1];
-
-completed_run3 = [
-    1 1 1 1 1 1 1 1 1 1 1 1 1
-    1 1 1 1 1 1 1 1 1 1 1 1 1
-    1 1 1 1 1 1 1 1 1 1 1 1 1
-    1 1 1 1 1 1 1 1 1 1 1 1 1
-    1 0 0 0 0 0 0 0 0 0 0 0 0];
+% completed_run1 = [
+%     1 1 1 1 1 1 1 1 1 1 1 1 1
+%     1 1 1 1 1 1 1 1 1 1 1 1 1
+%     1 1 1 1 1 1 1 1 1 1 1 1 1
+%     1 1 1 1 1 1 1 1 1 1 1 1 1
+%     1 1 0 1 1 1 1 1 1 1 1 1 1];
+% 
+% completed_run2 = [
+%     1 1 1 1 1 1 1 1 1 1 1 1 1
+%     1 1 1 1 1 1 1 1 1 1 1 1 1
+%     1 1 1 1 1 1 1 1 1 1 1 1 1
+%     1 1 1 1 1 1 1 1 1 1 1 1 1
+%     1 1 0 1 1 1 1 1 1 1 1 1 1];
+% 
+% completed_run3 = [
+%     1 1 1 1 1 1 1 1 1 1 1 1 1
+%     1 1 1 1 1 1 1 1 1 1 1 1 1
+%     1 1 1 1 1 1 1 1 1 1 1 1 1
+%     1 1 1 1 1 1 1 1 1 1 1 1 1
+%     1 0 0 0 0 0 0 0 0 0 0 0 0];
