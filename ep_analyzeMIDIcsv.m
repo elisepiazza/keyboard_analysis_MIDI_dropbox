@@ -30,16 +30,16 @@ completed_run3 = [
 
 all_completed_runs = cat(3, completed_run1, completed_run2, completed_run3); nRuns = 3;
 
-n_samples_in_beat = 480; %For 120 measures, 2 beats/measure, this should be 480 (115200/120/2)
+n_total_beats = 240; %120 measures, 2 quarter-note beats per measure
+n_samples_in_beat = 480; %# of time samples in a quarter-note beat. For 120 measures, 2 beats/measure, this should be 480 (115200/120/2)
 beat_padding = 0; %accept events that occur +/- this value outside of a beat (0.25 = 16th-note precision)
-
 
 for c = 1:nCond
     
     condition = conditions{c};
     
     load(['M_' condition '_answer_key.mat']);
-    beat_starts = correct_times(1):n_samples_in_beat:correct_times(end); nBeats = length(beat_starts);
+    beat_starts = 0:n_samples_in_beat:(n_samples_in_beat*n_total_beats)-1;
     prop_corr = zeros(nSubs,length(beat_starts),2);
 
     for s = 1:length(subjects)
@@ -62,9 +62,9 @@ for c = 1:nCond
                 
                 
                 %In each of b beats, check what prop. of events in the answer key also occurred in the subject
-                for b = 1:nBeats
+                for b = 1:n_total_beats
                     
-                    if b == nBeats
+                    if b == n_total_beats
                         curr_rows_answer = correct_times >= beat_starts(b);
                         curr_rows_subject = times >= beat_starts(b);
                     else
@@ -80,10 +80,10 @@ for c = 1:nCond
                     prop_corr(s,b,run) = length(indices)/size(curr_data_answer,1);
                 end
                 
-                figsize = [100 100 200*length(subjects) 250];
-                figure((run-1)*nCond+c); set(gcf, 'Position', figsize);
-                subplot(1,nSubs,s); plot(1:nBeats, prop_corr(s,:,run), 'o', 'MarkerSize', 12, 'MarkerEdgeColor', 'k', 'MarkerFaceColor', [0 .4 1]); ylim([0 1]); xlim([1 nBeats]); title(['Subject ' num2str(subjects(s))]); set(gca, 'FontSize', 16); ylabel('Prop. Correct Events'); xlabel('Beat');
-                print(gcf, '-dtiff', ['figures/Acc by beat_' condition '_run' num2str(run) '_beatpadding=' num2str(beat_padding) '.tif']);
+%                 figsize = [100 100 200*length(subjects) 250];
+%                 figure((run-1)*nCond+c); set(gcf, 'Position', figsize);
+%                 subplot(1,nSubs,s); plot(1:n_total_beats, prop_corr(s,:,run), 'o', 'MarkerSize', 12, 'MarkerEdgeColor', 'k', 'MarkerFaceColor', [0 .4 1]); ylim([0 1]); xlim([1 n_total_beats]); title(['Subject ' num2str(subjects(s))]); set(gca, 'FontSize', 16); ylabel('Prop. Correct Events'); xlabel('Beat');
+%                 print(gcf, '-dtiff', ['figures/Acc by beat_' condition '_run' num2str(run) '_beatpadding=' num2str(beat_padding) '.tif']);
             
             else
                 prop_corr(s,:,run) = NaN;                  
@@ -164,7 +164,7 @@ end
 
 %     c = intersect(curr_data_subject, curr_data_answer, 'rows');
 %     indices = find(ismember(curr_data_subject, c, 'rows'));
-%     beat_starts = times(1):n_samples_in_beat:times(end); nBeats = length(beat_starts);
+%     beat_starts = times(1):n_samples_in_beat:times(end); n_total_beats = length(beat_starts);
 
 % %Save the ideal data
 % [data_tbl] = ep_clean_MIDIcsv(['csv_files/Pretest_8B.csv']);
