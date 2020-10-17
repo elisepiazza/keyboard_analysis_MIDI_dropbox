@@ -1,39 +1,37 @@
 %ep_analyzeMIDIcsv
+%Note: in 1B, 2B, in beat 1 (time 0), there's stuff
 
 clear;
 % cd('/Users/elise/Dropbox/fMRI_music/keyboard_main/behavior/MIDI/');
-cd('/Users/epiazza/Dropbox/fMRI_music/keyboard_main/behavior/MIDI/');
+cd('/Users/eap/Dropbox/fMRI_music/keyboard_main/behavior/MIDI/');
 
 subjects = [2 3 4 5 8 9 10 15 17 20 21 23 22]; nSubs = length(subjects); 
 groups = {'AM', 'AM', 'M', 'M', 'M', 'M', 'AM', 'AM', 'M', 'AM', 'M', 'AM', 'M'};
 
-conditions = {'I', '8B', '2B', '1B', '.05'}; nCond = length(conditions);
+conditions = {'1B', '2B', '8B', 'I'}; nCond = length(conditions);
 
 completed_run1 = [
     1 1 1 1 1 1 1 1 1 1 1 1 1
     1 1 1 1 1 1 1 1 1 1 1 1 1
     1 1 1 1 1 1 1 1 1 1 1 1 1
-    1 1 1 1 1 1 1 1 1 1 1 1 1
-    1 1 0 1 1 1 1 1 1 1 1 1 1];
+    1 1 1 1 1 1 1 1 1 1 1 1 1];
 
 completed_run2 = [
     1 1 1 1 1 1 1 1 1 1 1 1 1
     1 1 1 1 1 1 1 1 1 1 1 1 1
     1 1 1 1 1 1 1 1 1 1 1 1 1
-    1 1 1 1 1 1 1 1 1 1 1 1 1
-    1 1 0 1 1 1 1 1 1 1 1 1 1];
+    1 1 1 1 1 1 1 1 1 1 1 1 1];
 
 completed_run3 = [
     1 1 1 1 1 1 1 1 1 1 1 1 1
     1 1 1 1 1 1 1 1 1 1 1 1 1
     1 1 1 1 1 1 1 1 1 1 1 1 1
-    1 1 1 1 1 1 1 1 1 1 1 1 1
-    1 0 0 0 0 0 0 0 0 0 0 0 0];
+    1 1 1 1 1 1 1 1 1 1 1 1 1];
 
 all_completed_runs = cat(3, completed_run1, completed_run2, completed_run3); nRuns = 3;
 
 n_samples_in_beat = 480; %For 120 measures, 2 beats/measure, this should be 480 (115200/120/2)
-beat_padding = .5; %accept events that occur +/- this value outside of a beat (0.25 = 16th-note precision)
+beat_padding = 0; %accept events that occur +/- this value outside of a beat (0.25 = 16th-note precision)
 
 
 for c = 1:nCond
@@ -44,7 +42,6 @@ for c = 1:nCond
     beat_starts = correct_times(1):n_samples_in_beat:correct_times(end); nBeats = length(beat_starts);
     prop_corr = zeros(nSubs,length(beat_starts),2);
 
-    
     for s = 1:length(subjects)
         
         subject = subjects(s);
@@ -247,3 +244,24 @@ end
 
 % nSubs_by_cond = horzcat(sum(all_completed_runs(:,:,1),2),sum(all_completed_runs(:,:,2),2)); %nSubs completed each condition for each run
 
+%Run data including .05 condition
+completed_run1 = [
+    1 1 1 1 1 1 1 1 1 1 1 1 1
+    1 1 1 1 1 1 1 1 1 1 1 1 1
+    1 1 1 1 1 1 1 1 1 1 1 1 1
+    1 1 1 1 1 1 1 1 1 1 1 1 1
+    1 1 0 1 1 1 1 1 1 1 1 1 1];
+
+completed_run2 = [
+    1 1 1 1 1 1 1 1 1 1 1 1 1
+    1 1 1 1 1 1 1 1 1 1 1 1 1
+    1 1 1 1 1 1 1 1 1 1 1 1 1
+    1 1 1 1 1 1 1 1 1 1 1 1 1
+    1 1 0 1 1 1 1 1 1 1 1 1 1];
+
+completed_run3 = [
+    1 1 1 1 1 1 1 1 1 1 1 1 1
+    1 1 1 1 1 1 1 1 1 1 1 1 1
+    1 1 1 1 1 1 1 1 1 1 1 1 1
+    1 1 1 1 1 1 1 1 1 1 1 1 1
+    1 0 0 0 0 0 0 0 0 0 0 0 0];
