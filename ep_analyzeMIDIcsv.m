@@ -41,7 +41,7 @@ for c = 1:nCond
     %Define the start time of each quarter-note beat according to
     %time-stamping: 0 480 960 1440...
     beat_starts = 0:n_samples_in_beat:(n_samples_in_beat*n_total_beats)-1;
-    prop_corr = zeros(nSubs,length(beat_starts),2);
+    prop_corr = zeros(nSubs,length(beat_starts),nRuns);
     
     for s = 1:length(subjects)
         
